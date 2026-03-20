@@ -1,15 +1,15 @@
-import { WebTracerProvider } from '@opentelemetry/sdk-trace-web';
-import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
-import { registerInstrumentations } from '@opentelemetry/instrumentation';
-import { FetchInstrumentation } from '@opentelemetry/instrumentation-fetch';
-import { XMLHttpRequestInstrumentation } from '@opentelemetry/instrumentation-xml-http-request';
-import { UserInteractionInstrumentation } from '@opentelemetry/instrumentation-user-interaction';
+import { WebTracerProvider } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/sdk-trace-web/+esm';
+import { BatchSpanProcessor } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/sdk-trace-base/+esm';
+import { OTLPTraceExporter } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/exporter-trace-otlp-http/+esm';
+import { registerInstrumentations } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/instrumentation/+esm';
+import { FetchInstrumentation } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/instrumentation-fetch/+esm';
+import { XMLHttpRequestInstrumentation } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/instrumentation-xml-http-request/+esm';
+import { UserInteractionInstrumentation } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/instrumentation-user-interaction/+esm';
 
 const provider = new WebTracerProvider();
 
 const exporter = new OTLPTraceExporter({
-  url: 'http://<YOUR-SIGNOZ-ENDPOINT>/v1/traces',
+  url: 'http://signoz-otel-http-signoz.apps.ocp-dev-cluster.easelogics.com/v1/traces',
 });
 
 provider.addSpanProcessor(new BatchSpanProcessor(exporter));
