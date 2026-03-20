@@ -1,0 +1,28 @@
+{
+  "name": "newsite",
+  "version": "1.0.0",
+  "description": "A simple, polished company single-page website served by **Nginx**.  \r Designed to be tested on an **OpenShift** cluster and easy to run locally via **Docker**.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/akay641998/newsite.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/akay641998/newsite/issues"
+  },
+  "homepage": "https://github.com/akay641998/newsite#readme",
+  "dependencies": {
+    "@opentelemetry/exporter-trace-otlp-http": "^0.213.0",
+    "@opentelemetry/instrumentation-fetch": "^0.213.0",
+    "@opentelemetry/instrumentation-user-interaction": "^0.57.0",
+    "@opentelemetry/instrumentation-xml-http-request": "^0.213.0",
+    "@opentelemetry/sdk-trace-web": "^2.6.0",
+    "web-vitals": "^5.1.0"
+  }
+}
