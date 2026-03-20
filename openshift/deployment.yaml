@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: acmecorp-website
+  labels:
+    app: acmecorp-website
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: acmecorp-website
+  template:
+    metadata:
+      labels:
+        app: acmecorp-website
+    spec:
+      containers:
+        - name: web
+          # Replace with your actual image reference (e.g. quay.io/youruser/acmecorp-website:latest)
+          image: acmecorp-website:latest
+          ports:
+            - containerPort: 8080
+              protocol: TCP
+          # Liveness probe — restart pod if nginx is not responding
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            failureThreshold: 3
+          # Readiness probe — only route traffic when nginx is ready
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+          # OpenShift Security Context — run as non-root
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+      securityContext:
+        runAsNonRoot: true
