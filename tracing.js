@@ -6,13 +6,16 @@ import { FetchInstrumentation } from 'https://cdn.jsdelivr.net/npm/@opentelemetr
 import { XMLHttpRequestInstrumentation } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/instrumentation-xml-http-request/+esm';
 import { UserInteractionInstrumentation } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/instrumentation-user-interaction/+esm';
 
-const provider = new WebTracerProvider();
+console.log('tracing loaded');
 
 const exporter = new OTLPTraceExporter({
   url: 'http://signoz-otel-http-signoz.apps.ocp-dev-cluster.easelogics.com/v1/traces',
 });
 
-provider.addSpanProcessor(new BatchSpanProcessor(exporter));
+const provider = new WebTracerProvider({
+  spanProcessors: [new BatchSpanProcessor(exporter)],
+});
+
 provider.register();
 
 registerInstrumentations({
@@ -22,3 +25,5 @@ registerInstrumentations({
     new UserInteractionInstrumentation(),
   ],
 });
+
+console.log('otel registered');
