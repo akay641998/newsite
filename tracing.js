@@ -1,10 +1,7 @@
+import { trace } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/api/+esm';
 import { WebTracerProvider } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/sdk-trace-web/+esm';
 import { BatchSpanProcessor } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/sdk-trace-base/+esm';
 import { OTLPTraceExporter } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/exporter-trace-otlp-http/+esm';
-import { registerInstrumentations } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/instrumentation/+esm';
-import { FetchInstrumentation } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/instrumentation-fetch/+esm';
-import { XMLHttpRequestInstrumentation } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/instrumentation-xml-http-request/+esm';
-import { UserInteractionInstrumentation } from 'https://cdn.jsdelivr.net/npm/@opentelemetry/instrumentation-user-interaction/+esm';
 
 console.log('tracing loaded');
 
@@ -18,12 +15,10 @@ const provider = new WebTracerProvider({
 
 provider.register();
 
-registerInstrumentations({
-  instrumentations: [
-    new FetchInstrumentation(),
-    new XMLHttpRequestInstrumentation(),
-    new UserInteractionInstrumentation(),
-  ],
-});
+const tracer = trace.getTracer('newsite-browser');
 
-console.log('otel registered');
+window.addEventListener('load', () => {
+  const span = tracer.startSpan('page-load-test');
+  span.end();
+  console.log('test span created');
+});
