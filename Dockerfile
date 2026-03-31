@@ -49,4 +49,22 @@ RUN apk add --no-cache \
     grpc \
     protobuf \
     re2 \
-    abs
+    abseil-cpp && \
+    addgroup -S nginx && \
+    adduser -S -G nginx nginx
+
+COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
+COPY --from=builder /etc/nginx /etc/nginx
+COPY --from=builder /usr/lib/nginx/modules /usr/lib/nginx/modules
+
+RUN mkdir -p /var/log/nginx /var/cache/nginx /run /usr/share/nginx/html && \
+    chown -R nginx:nginx /var/log/nginx /var/cache/nginx /etc/nginx /run /usr/share/nginx/html
+
+COPY index.html /usr/share/nginx/html/index.html
+COPY style.css  /usr/share/nginx/html/style.css
+COPY main.js    /usr/share/nginx/html/main.js
+COPY nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 8080
+USER nginx
+CMD ["nginx", "-g", "daemon off;"]
