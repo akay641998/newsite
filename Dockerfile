@@ -1,4 +1,4 @@
-# Stage 1 — Build nginx with otel module (Debian for glibc compatibility)
+# Stage 1 — Build nginx with otel module
 FROM debian:bookworm-slim AS builder
 
 RUN apt-get update && apt-get install -y \
@@ -40,9 +40,12 @@ RUN cd nginx-${NGINX_VERSION} && \
       --with-http_v2_module \
       --with-http_stub_status_module \
       --add-dynamic-module=../nginx-otel && \
-    make && make install
+    make && make install && \
+    mkdir -p /usr/lib/nginx/modules && \
+    find / -name "ngx_otel_module.so" 2>/dev/null && \
+    cp /nginx-${NGINX_VERSION}/objs/ngx_otel_module.so /usr/lib/nginx/modules/
 
-# Stage 2 — Runtime image (Debian slim)
+# Stage 2 — Runtime image
 FROM debian:bookworm-slim
 
 RUN apt-get update && apt-get install -y \
@@ -58,7 +61,7 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=builder /etc/nginx /etc/nginx
-COPY --from=builder /usr/lib/nginx/modules /usr/lib/nginx/modules
+COPY --from=builder /usr/lib/nginx/modules/ngx_otel_module.so /usr/lib/nginx/modules/ngx_otel_module.so
 
 RUN mkdir -p /var/log/nginx /var/cache/nginx /run /usr/share/nginx/html && \
     chown -R nginx:nginx /var/log/nginx /var/cache/nginx /etc/nginx /run /usr/share/nginx/html
