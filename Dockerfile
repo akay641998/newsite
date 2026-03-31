@@ -1,19 +1,21 @@
-# Stage 1 — Build nginx with otel module
-FROM alpine:3.19 AS builder
+# Stage 1 — Build nginx with otel module (Debian for glibc compatibility)
+FROM debian:bookworm-slim AS builder
 
-RUN apk add --no-cache \
-    build-base \
+RUN apt-get update && apt-get install -y \
+    build-essential \
     cmake \
     git \
     curl \
-    openssl-dev \
-    pcre2-dev \
-    zlib-dev \
-    linux-headers \
-    grpc-dev \
-    protobuf-dev \
-    re2-dev \
-    abseil-cpp-dev
+    libssl-dev \
+    libpcre2-dev \
+    zlib1g-dev \
+    libgrpc-dev \
+    libprotobuf-dev \
+    protobuf-compiler \
+    protobuf-compiler-grpc \
+    libre2-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
 
 ENV NGINX_VERSION=1.27.4
 RUN curl -O http://nginx.org/download/nginx-${NGINX_VERSION}.tar.gz && \
@@ -40,18 +42,19 @@ RUN cd nginx-${NGINX_VERSION} && \
       --add-dynamic-module=../nginx-otel && \
     make && make install
 
-# Stage 2 — Runtime image
-FROM alpine:3.19
+# Stage 2 — Runtime image (Debian slim)
+FROM debian:bookworm-slim
 
-RUN apk add --no-cache \
-    pcre2 \
-    openssl \
-    grpc \
-    protobuf \
-    re2 \
-    abseil-cpp && \
-    addgroup -S nginx && \
-    adduser -S -G nginx nginx
+RUN apt-get update && apt-get install -y \
+    libpcre2-8-0 \
+    libssl3 \
+    zlib1g \
+    libgrpc++1.51 \
+    libprotobuf32 \
+    libre2-9 \
+    && rm -rf /var/lib/apt/lists/* \
+    && groupadd -r nginx \
+    && useradd -r -g nginx nginx
 
 COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
 COPY --from=builder /etc/nginx /etc/nginx
